@@ -1,0 +1,133 @@
+;
+;AVStream pin centric sample mini driver (MYKS.sys) installation file. 
+;
+
+[Version]
+signature="$CHICAGO$"
+Class=Media
+ClassGUID={4d36e96c-e325-11ce-bfc1-08002be10318}
+Provider=%Msft%
+Catalogfile=myks.cat
+DriverVer=08/31/2006,6.0.5600.12
+
+[SourceDisksNames]
+1000=%cdname%,,,
+
+[SourceDisksFiles]
+myks.sys=1000
+
+[DestinationDirs]
+DefaultDestDir=12
+myks.CopyFiles=12
+
+[myks.CopyFiles]
+myks.sys
+
+[Manufacturer]
+%Msft%=Microsoft,NTamd64
+
+[Microsoft]
+%myks.DeviceDesc%=myks,MYKS
+
+[Microsoft.NTamd64]
+%myks.DeviceDesc%=myks,MYKS
+
+;---------------------------------------------------------------
+;                x 86  D D I n s t a l l
+;---------------------------------------------------------------
+
+[myks.NT]
+Include=ks.inf,wdmaudio.inf
+Needs=KS.Registration,WDMAUDIO.Registration.NT
+CopyFiles=myks.CopyFiles
+AddReg=myks.AddReg
+
+[myks.AddReg]
+;HKR,,DevLoader,,*ntkern
+;HKR,,NTMPDriver,,pvavsaud.sys
+;HKR,,OkToHibernate,3,01
+; Disable driver page out
+;HKR,,PageOutWhenUnopened,3,0
+;HKR,,PageOutWhenUnopened,3,01
+;HKR,,DontSuspendIfStreamsAreRunning,3,01
+
+; audio capture registry entries
+
+HKR,,AssociatedFilters,,"wdmaud"
+HKR,,Driver,,myks.sys
+
+HKR,Drivers,SubClasses,,"wave"
+HKR,Drivers\wave\wdmaud.drv,Driver,,wdmaud.drv
+HKR,Drivers\wave\wdmaud.drv,Description,,%myks.DeviceDesc%
+
+;HKLM,System\CurrentControlSet\Control\MediaCategories\%AudioInPinID%,Display,1, 00,00,00,00
+;HKLM,%MediaCategories%\%AudioInPinID%,Name,,%AudioInPinName%
+;HKLM,System\CurrentControlSet\Control\MediaCategories\%AudioOutPinID%,Display,1, 00,00,00,00
+;HKLM,%MediaCategories%\%AudioOutPinID%,Name,,%AudioOutPinName%
+
+;HKLM,%MediaCategories%\%Simple.NameGuid%,Name,,%Simple.Name%
+
+
+;---------------------------------------------------------------
+;                I n t e r f a c e s
+;---------------------------------------------------------------
+
+[myks.NT.Interfaces]
+AddInterface=%KSCATEGORY_AUDIO%,"PcmRender",RenderInterface.NT,
+AddInterface=%KSCATEGORY_RENDER%,"PcmRender",RenderInterface.NT,
+
+[RenderInterface.NT]
+AddReg=myks.Reader.AddReg, myks.MemoryPreferences.AddReg
+
+;---------------------------------------------------------------
+;                A d d R e g
+;---------------------------------------------------------------
+
+[myks.Reader.AddReg]
+HKR,,CLSID,,%Proxy.CLSID%
+HKR,,FriendlyName,,%myks.Reader.FriendlyName%
+
+;---------------------------------------------------------------
+;                S e r v i c e s  
+;---------------------------------------------------------------
+
+[myks.NT.Services]
+AddService=myks, 0x00000002, myks.ServiceInstall
+
+[myks.ServiceInstall]
+DisplayName=%myks.DeviceDesc%
+ServiceType=%SERVICE_KERNEL_DRIVER%
+StartType=%SERVICE_DEMAND_START%
+ErrorControl=%SERVICE_ERROR_NORMAL%
+ServiceBinary=%12%\myks.sys
+
+;---------------------------------------------------------------
+;                S t r i n g s
+;---------------------------------------------------------------
+
+[Strings]
+; non-localizable
+Proxy.CLSID="{17CCA71B-ECD7-11D0-B908-00A0C9223196}"
+KSCATEGORY_AUDIO="{6994AD04-93EF-11D0-A3CC-00A0C9223196}"
+KSCATEGORY_CAPTURE="{65E8773D-8F56-11D0-A3B9-00A0C9223196}"
+KSCATEGORY_RENDER="{65E8773E-8F56-11D0-A3B9-00A0C9223196}"
+
+SERVICE_KERNEL_DRIVER=1
+SERVICE_DEMAND_START=3
+SERVICE_ERROR_NORMAL=1
+REG_DWORD=0x00010001
+
+;localizable
+Msft="Den MFG"
+myks.DeviceDesc="Den render device"
+myks.Reader.FriendlyName="Den render device"
+cdname="Den Installation Disk"
+
+;AudioOutPinID       =   "{27C304E1-80F6-11d5-AFD4-0001032B6C31}"
+;AudioOutPinName     =   "Audio Capture"
+;AudioInPinID        =   "{27C304E1-80F6-11d5-AFD4-0001032B6C32}"
+;AudioInPinName      =   "Audio Input"
+
+;MediaCategories="SYSTEM\CurrentControlSet\Control\MediaCategories"
+;Simple.NameGuid="{185FEDEF-9905-11D1-95A9-00C04FB925D3}"
+;Simple.Name="Den (Simple)"
