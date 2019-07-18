@@ -137,7 +137,7 @@ ksCaptureFilterPinDescriptors[] = {
         NULL, // Name
         0                                       // Reserved
       },
-      KSPIN_FLAG_GENERATE_MAPPINGS | KSPIN_FLAG_DO_NOT_INITIATE_PROCESSING | KSPIN_FLAG_FIXED_FORMAT, // Flags
+      KSPIN_FLAG_DISPATCH_LEVEL_PROCESSING | KSPIN_FLAG_PROCESS_IN_RUN_STATE_ONLY | KSPIN_FLAG_DO_NOT_INITIATE_PROCESSING, // Flags
       1,                                        // Instances Possible
       0,                                        // Instances Necessary
       &ksAudioPinAllocatorFraming,              // Allocator Framing
